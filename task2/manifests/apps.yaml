@@ -1,0 +1,151 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipeline-config
+data:
+  RABBIT_HOST: "rabbitmq"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+      - name: worker
+        image: pipeline-worker:latest
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: pipeline-config
+        env:
+        - name: APP_NAME
+          value: "APP-1"
+        - name: INPUT_QUEUE
+          value: "queue-in"
+        - name: OUTPUT_QUEUE
+          value: "queue-1"
+        startupProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 15
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+      - name: worker
+        image: pipeline-worker:latest
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: pipeline-config
+        env:
+        - name: APP_NAME
+          value: "APP-2"
+        - name: INPUT_QUEUE
+          value: "queue-1"
+        - name: OUTPUT_QUEUE
+          value: "queue-2"
+        startupProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 15
+ 
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app3
+  template:
+    metadata:
+      labels:
+        app: app3
+    spec:
+      containers:
+      - name: worker
+        image: pipeline-worker:latest
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: pipeline-config
+        env:
+        - name: APP_NAME
+          value: "APP-3"
+        - name: INPUT_QUEUE
+          value: "queue-2"
+        - name: OUTPUT_QUEUE
+          value: "queue-3"
+        startupProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 15
+                
+ 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app4
+  template:
+    metadata:
+      labels:
+        app: app4
+    spec:
+      containers:
+      - name: worker
+        image: pipeline-worker:latest
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: pipeline-config
+        env:
+        - name: APP_NAME
+          value: "APP-4"
+        - name: INPUT_QUEUE
+          value: "queue-3"
+        startupProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 15
+ 
