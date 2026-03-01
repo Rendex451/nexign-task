@@ -35,12 +35,10 @@ spec:
           value: "queue-in"
         - name: OUTPUT_QUEUE
           value: "queue-1"
-        startupProbe:
-          tcpSocket:
-            port: 5672
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          failureThreshold: 15
+      initContainers:
+      - name: wait-for-rabbitmq
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;'] 
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -70,13 +68,10 @@ spec:
           value: "queue-1"
         - name: OUTPUT_QUEUE
           value: "queue-2"
-        startupProbe:
-          tcpSocket:
-            port: 5672
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          failureThreshold: 15
- 
+      initContainers:
+      - name: wait-for-rabbitmq
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;']
 
 ---
 apiVersion: apps/v1
@@ -107,13 +102,10 @@ spec:
           value: "queue-2"
         - name: OUTPUT_QUEUE
           value: "queue-3"
-        startupProbe:
-          tcpSocket:
-            port: 5672
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          failureThreshold: 15
-                
+      initContainers:
+      - name: wait-for-rabbitmq
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;']               
  
 ---
 apiVersion: apps/v1
@@ -142,10 +134,7 @@ spec:
           value: "APP-4"
         - name: INPUT_QUEUE
           value: "queue-3"
-        startupProbe:
-          tcpSocket:
-            port: 5672
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          failureThreshold: 15
- 
+      initContainers:
+      - name: wait-for-rabbitmq
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;']
